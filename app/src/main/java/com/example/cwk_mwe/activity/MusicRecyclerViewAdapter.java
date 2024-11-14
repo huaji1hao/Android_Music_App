@@ -1,5 +1,7 @@
 package com.example.cwk_mwe.activity;
 
+import static com.example.cwk_mwe.utils.AppUtils.formatTime;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -41,7 +43,7 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
         MusicCard music = musicList.get(position);
         holder.title.setText(music.title);
         holder.artist.setText(music.artist);
-        holder.duration.setText(music.duration);
+        holder.duration.setText(formatTime(music.duration));
 
         holder.itemView.setOnClickListener(v -> {
             // Stop the service if it is already running
@@ -57,9 +59,6 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
                 serviceIntent.putExtra("path", music.path);
                 serviceIntent.putExtra("musicList", new ArrayList<>(musicList));
                 context.startService(serviceIntent);
-
-//                serviceIntent.setAction(AudioPlayerService.ACTION_PLAY);
-//                context.startService(serviceIntent);
             }, 500); // Adjust the delay as needed
         });
     }

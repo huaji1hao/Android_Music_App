@@ -72,7 +72,7 @@ public class AppUtils {
 
                         musicCard.artist = artist != null ? artist : "Unknown Artist";
                         musicCard.album = album != null ? album : "Unknown Album";
-                        musicCard.duration = duration != null ? formatDuration(duration) : "Unknown Duration";
+                        musicCard.duration = duration != null ? duration : "Unknown Duration";
                         musicCard.path = file.getAbsolutePath();
                     } catch (Exception e) {
                         Log.e("MediaMetadataRetriever", "Error retrieving metadata", e);
@@ -87,10 +87,16 @@ public class AppUtils {
     }
 
     // Helper method to format duration from milliseconds to mm:ss
-    private static String formatDuration(String duration) {
+    public static String formatTime(String duration) {
         long millis = Long.parseLong(duration);
         long minutes = (millis / 1000) / 60;
         long seconds = (millis / 1000) % 60;
         return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+    }
+
+    public static String formatTime(int timeInMillis) {
+        int minutes = (timeInMillis / 1000) / 60;
+        int seconds = (timeInMillis / 1000) % 60;
+        return String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
     }
 }
