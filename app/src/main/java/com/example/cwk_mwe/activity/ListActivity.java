@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cwk_mwe.utils.MusicCard;
-import com.example.cwk_mwe.ui.MusicRecyclerViewAdapter;
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.utils.AppUtils;
 

@@ -1,6 +1,8 @@
 package com.example.cwk_mwe.utils;
 
-public class MusicCard {
+import java.io.Serializable;
+
+public class MusicCard implements Serializable {
     public String title;
     public String artist;
     public String album;

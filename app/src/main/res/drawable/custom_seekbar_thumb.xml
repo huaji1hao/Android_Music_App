@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size android:width="16dp" android:height="16dp" />
+    <solid android:color="#666666" /> <!-- Dark gray color -->
+    <corners android:radius="8dp" /> <!-- Make it a circle -->
+</shape>

@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.cwk_mwe.activity.ListActivity;
+import com.example.cwk_mwe.activity.PlayerActivity;
 import com.example.cwk_mwe.service.NotificationService;
 import com.example.cwk_mwe.utils.AppUtils;
 
@@ -38,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
         Button listButton = findViewById(R.id.list_button);
         listButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, ListActivity.class);
+            intent.putExtra("MAIN", AppUtils.SuccessCode);
+            startActivity(intent);
+        });
+
+        Button playerButton = findViewById(R.id.player_button);
+        playerButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, PlayerActivity.class);
             intent.putExtra("MAIN", AppUtils.SuccessCode);
             startActivity(intent);
         });

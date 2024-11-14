@@ -1,4 +1,4 @@
-package com.example.cwk_mwe.ui;
+package com.example.cwk_mwe.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
-import com.example.cwk_mwe.utils.AudiobookPlayer;
 import com.example.cwk_mwe.utils.MusicCard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecyclerViewAdapter.MusicViewHolder> {
@@ -55,10 +55,11 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
                 Intent serviceIntent = new Intent(context, AudioPlayerService.class);
                 serviceIntent.setAction(AudioPlayerService.ACTION_LOAD);
                 serviceIntent.putExtra("path", music.path);
+                serviceIntent.putExtra("musicList", new ArrayList<>(musicList));
                 context.startService(serviceIntent);
 
-                serviceIntent.setAction(AudioPlayerService.ACTION_PLAY);
-                context.startService(serviceIntent);
+//                serviceIntent.setAction(AudioPlayerService.ACTION_PLAY);
+//                context.startService(serviceIntent);
             }, 500); // Adjust the delay as needed
         });
     }

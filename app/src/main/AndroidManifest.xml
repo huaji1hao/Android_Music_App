@@ -43,6 +43,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ListActivity" />
+        <activity android:name=".activity.PlayerActivity" />
     </application>
 
 </manifest>
