@@ -1,4 +1,4 @@
-package com.example.cwk_mwe;
+package com.example.cwk_mwe.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,8 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.cwk_mwe.activity.ListActivity;
-import com.example.cwk_mwe.activity.PlayerActivity;
+import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.NotificationService;
 import com.example.cwk_mwe.utils.AppUtils;
 
@@ -50,7 +49,17 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        Button settingsButton = findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(intent);
+        });
 
+        Button exitButton = findViewById(R.id.exit_button);
+        exitButton.setOnClickListener(v -> {
+            finishAffinity(); // Close all activities and exit the app
+            System.exit(0); // Ensure the app is completely closed
+        });
 
     }
 

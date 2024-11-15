@@ -34,7 +34,7 @@
             android:foregroundServiceType="shortService" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,6 +44,7 @@
         </activity>
         <activity android:name=".activity.ListActivity" />
         <activity android:name=".activity.PlayerActivity" />
+        <activity android:name=".activity.SettingActivity" />
     </application>
 
 </manifest>

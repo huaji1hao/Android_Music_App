@@ -34,6 +34,7 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView musicAlbumTextView;
     private SeekBar seekBar;
     private Handler handler = new Handler();
+    private ObjectAnimator rotationAnimator;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -44,7 +45,9 @@ public class PlayerActivity extends AppCompatActivity {
             updateMusicInfo();
             updatePlayPauseButton();
             updateSeekBar();
-            startCassetteRotation();
+            if (audioPlayerService.isPlaying()) {
+                startCassetteRotation(); // Start rotation if already playing
+            }
         }
 
         @Override
@@ -71,9 +74,11 @@ public class PlayerActivity extends AppCompatActivity {
                 if (audioPlayerService.isPlaying()) {
                     audioPlayerService.pause();
                     playPauseButton.setImageResource(R.drawable.ic_play);
+                    pauseCassetteRotation();
                 } else {
                     audioPlayerService.play();
                     playPauseButton.setImageResource(R.drawable.ic_pause);
+                    resumeCassetteRotation();
                 }
             }
         });
@@ -185,16 +190,31 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void startCassetteRotation() {
-        ImageView cassetteImage = findViewById(R.id.cassette_image);
-        ObjectAnimator rotation = ObjectAnimator.ofFloat(cassetteImage, "rotation", 0f, 360f);
-        rotation.setDuration(10000); // 10 seconds for one full rotation
-        rotation.setInterpolator(new LinearInterpolator());
-        rotation.setRepeatCount(ObjectAnimator.INFINITE);
-        rotation.start();
+        if (rotationAnimator == null) {
+            ImageView cassetteImage = findViewById(R.id.cassette_image);
+            rotationAnimator = ObjectAnimator.ofFloat(cassetteImage, "rotation", 0f, 360f);
+            rotationAnimator.setDuration(10000); // 10 seconds for one full rotation
+            rotationAnimator.setInterpolator(new LinearInterpolator());
+            rotationAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        }
+        rotationAnimator.start();
+    }
+
+    private void pauseCassetteRotation() {
+        if (rotationAnimator != null && rotationAnimator.isRunning()) {
+            rotationAnimator.pause();
+        }
+    }
+
+    private void resumeCassetteRotation() {
+        if (rotationAnimator != null && rotationAnimator.isPaused()) {
+            rotationAnimator.resume();
+        }
     }
 
     private void stopCassetteRotation() {
-        ImageView cassetteImage = findViewById(R.id.cassette_image);
-        cassetteImage.clearAnimation();
+        if (rotationAnimator != null) {
+            rotationAnimator.end();
+        }
     }
 }

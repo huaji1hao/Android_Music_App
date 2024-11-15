@@ -81,6 +81,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/music_album" />
 
+    <ImageView
+        android:id="@+id/bookmark_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="28dp"
+        android:src="@drawable/ic_bookmark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/music_seekbar" />
+
+    <TextView
+        android:id="@+id/playback_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="45dp"
+        android:layout_marginBottom="21dp"
+        android:text="x1.0"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:fontFamily="@font/ubuntu_bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/music_seekbar" />
+
     <SeekBar
         android:id="@+id/music_seekbar"
         android:layout_width="0dp"
@@ -118,7 +143,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="45dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -126,8 +151,8 @@
 
         <ImageView
             android:id="@+id/prev_button"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginEnd="48dp"
             android:background="@android:color/transparent"
             android:contentDescription="Previous"
@@ -135,8 +160,8 @@
 
         <ImageView
             android:id="@+id/play_pause_button"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
@@ -145,8 +170,8 @@
 
         <ImageView
             android:id="@+id/next_button"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginStart="48dp"
             android:background="@android:color/transparent"
             android:contentDescription="Next"
