@@ -16,7 +16,7 @@ import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.NotificationService;
 import com.example.cwk_mwe.utils.AppUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

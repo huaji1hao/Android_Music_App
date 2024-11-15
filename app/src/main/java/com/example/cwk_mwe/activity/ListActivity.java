@@ -20,7 +20,7 @@ import com.example.cwk_mwe.utils.AppUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends BaseActivity {
 
     private RecyclerView musicRecyclerView;
     private MusicRecyclerViewAdapter adapter;

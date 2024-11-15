@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#FAD0C4">
+    >
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -56,8 +56,8 @@
         android:id="@+id/playback_speed_seekbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:max="20"
-        android:progress="10"
+        android:max="18"
+        android:progress="9"
         android:thumb="@drawable/custom_seekbar_thumb"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
@@ -92,24 +92,20 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/square_button_border"
-             />
+            android:src="@drawable/change_color_button1" />
 
         <ImageView
             android:id="@+id/change_color_button2"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/square_button_border"
-            android:backgroundTint="#00FF00"
-             />
+            android:src="@drawable/change_color_button2" />
 
         <ImageView
             android:id="@+id/change_color_button3"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/square_button_border"
-             />
+            android:src="@drawable/change_color_button3" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

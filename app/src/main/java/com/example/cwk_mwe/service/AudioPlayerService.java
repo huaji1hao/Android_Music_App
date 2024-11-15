@@ -2,6 +2,7 @@ package com.example.cwk_mwe.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -22,11 +23,13 @@ public class AudioPlayerService extends Service {
     private AudiobookPlayer audiobookPlayer;
     private ArrayList<MusicCard> musicList;
     private int currentIndex = -1;
+    private float playbackSpeed = 1;
 
     @Override
     public void onCreate() {
         super.onCreate();
         audiobookPlayer = new AudiobookPlayer();
+        playbackSpeed = loadPlaybackSpeed();
         Log.d("AudioPlayerService", "Service created");
     }
 
@@ -72,7 +75,7 @@ public class AudioPlayerService extends Service {
         String path = intent.getStringExtra("path");
         if (path != null) {
             currentIndex = getCurrentIndex(path);
-            audiobookPlayer.load(path, 1); // Load the specified path
+            audiobookPlayer.load(path, playbackSpeed); // Load the specified path
             startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
         }
     }
@@ -154,7 +157,7 @@ public class AudioPlayerService extends Service {
         if (currentIndex >= 0 && currentIndex < musicList.size()) {
             audiobookPlayer.stop();
             String path = musicList.get(currentIndex).path;
-            audiobookPlayer.load(path, 1);
+            audiobookPlayer.load(path, playbackSpeed);
             audiobookPlayer.play();
             startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
         }
@@ -162,5 +165,27 @@ public class AudioPlayerService extends Service {
 
     public boolean isPlaying() {
         return audiobookPlayer.getState() == AudiobookPlayer.AudiobookPlayerState.PLAYING;
+    }
+
+    public void setPlaybackSpeed(float speed) {
+        playbackSpeed = speed;
+        audiobookPlayer.setPlaybackSpeed(speed);
+        savePlaybackSpeed(speed);
+    }
+
+    public float getPlaybackSpeed() {
+        return playbackSpeed;
+    }
+
+    private void savePlaybackSpeed(float speed) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putFloat("playbackSpeed", speed);
+        editor.apply();
+    }
+
+    private float loadPlaybackSpeed() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+        return sharedPreferences.getFloat("playbackSpeed", 1.0f); // Default speed is 1.0f
     }
 }

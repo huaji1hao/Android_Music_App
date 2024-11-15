@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +20,12 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
 import com.example.cwk_mwe.utils.MusicCard;
 
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends BaseActivity {
 
     private ImageView playPauseButton;
     private AudioPlayerService audioPlayerService;
@@ -45,15 +46,13 @@ public class PlayerActivity extends AppCompatActivity {
             updateMusicInfo();
             updatePlayPauseButton();
             updateSeekBar();
-            if (audioPlayerService.isPlaying()) {
-                startCassetteRotation(); // Start rotation if already playing
-            }
+            updateCassetteRotation();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             isBound = false;
-//            stopSeekBarUpdate();
+            stopSeekBarUpdate();
             stopCassetteRotation();
         }
     };
@@ -91,6 +90,7 @@ public class PlayerActivity extends AppCompatActivity {
                 }
                 audioPlayerService.playNext();
                 updateMusicInfo();
+                updateCassetteRotation();
             }
         });
 
@@ -102,8 +102,16 @@ public class PlayerActivity extends AppCompatActivity {
                 }
                 audioPlayerService.playPrev();
                 updateMusicInfo();
+                updateCassetteRotation();
             }
         });
+
+        TextView playbackSpeedTextView = findViewById(R.id.playback_speed);
+
+        // Load playback speed from SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+        float playbackSpeed = sharedPreferences.getFloat("playbackSpeed", 1.0f); // Default speed is 1.0f
+        playbackSpeedTextView.setText(String.format("x%.1f", playbackSpeed));
 
         musicTitleTextView = findViewById(R.id.music_title);
         musicArtistTextView = findViewById(R.id.music_artist);
@@ -142,7 +150,7 @@ public class PlayerActivity extends AppCompatActivity {
             unbindService(connection);
             isBound = false;
 //            stopSeekBarUpdate();
-            stopCassetteRotation();
+//            stopCassetteRotation();
         }
     }
 
@@ -189,7 +197,12 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void startCassetteRotation() {
+    private void stopSeekBarUpdate() {
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    private void updateCassetteRotation() {
+        if (!audioPlayerService.isPlaying()) return;
         if (rotationAnimator == null) {
             ImageView cassetteImage = findViewById(R.id.cassette_image);
             rotationAnimator = ObjectAnimator.ofFloat(cassetteImage, "rotation", 0f, 360f);
