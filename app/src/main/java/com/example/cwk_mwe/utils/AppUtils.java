@@ -11,6 +11,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
@@ -98,5 +101,21 @@ public class AppUtils {
         int minutes = (timeInMillis / 1000) / 60;
         int seconds = (timeInMillis / 1000) % 60;
         return String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
+    }
+
+
+    public static JSONObject musicCardToJson(MusicCard musicCard) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("title", musicCard.title);
+            jsonObject.put("artist", musicCard.artist);
+            jsonObject.put("album", musicCard.album);
+            jsonObject.put("duration", musicCard.duration);
+            jsonObject.put("path", musicCard.path);
+            jsonObject.put("progress", musicCard.progress);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 }

@@ -47,8 +47,8 @@ public class AudioPlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String action = intent.getAction();
-        if (action != null) {
+        if (intent != null && intent.getAction() != null) {
+            String action = intent.getAction();
             switch (action) {
                 case ACTION_LOAD:
                     handleLoadAction(intent);
@@ -78,6 +78,9 @@ public class AudioPlayerService extends Service {
             audiobookPlayer.load(path, playbackSpeed); // Load the specified path
             startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
         }
+
+        int progress = intent.getIntExtra("progress", 0);
+        audiobookPlayer.skipTo(progress); // Skip to the specified progress
     }
 
     private void handleStopAction() {

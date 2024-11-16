@@ -2,9 +2,12 @@ package com.example.cwk_mwe.activity;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -56,6 +59,23 @@ public class ListActivity extends BaseActivity {
             adapter = new MusicRecyclerViewAdapter(this, musicList);
             musicRecyclerView.setAdapter(adapter);
 
+            // Initialize bookmark RecyclerView
+            RecyclerView bookmarkRecyclerView = findViewById(R.id.bookmark_recycler_view);
+            LinearLayoutManager bookmarkLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
+                @Override
+                public boolean canScrollVertically() {
+                    return true;
+                }
+
+                @Override
+                public int getChildCount() {
+                    return Math.min(super.getChildCount(), 4); // Limit to 4 items
+                }
+            };
+            bookmarkRecyclerView.setLayoutManager(bookmarkLayoutManager);
+            BookmarkRecyclerViewAdapter bookmarkAdapter = new BookmarkRecyclerViewAdapter(this, musicList);
+            bookmarkRecyclerView.setAdapter(bookmarkAdapter);
+
         } else {
             Toast.makeText(this, "Error: Invalid result code", Toast.LENGTH_SHORT).show();
             finish();
@@ -63,6 +83,19 @@ public class ListActivity extends BaseActivity {
 
         ImageButton backButton = findViewById(R.id.back_button0);
         backButton.setOnClickListener(v -> finish());
+
+        setupClearButton();
+    }
+
+    private void setupClearButton() {
+        ImageView clearButton = findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("musicCards");
+            editor.apply();
+            Log.d("PlayerActivity", "All bookmarks cleared");
+        });
     }
 
     @Override

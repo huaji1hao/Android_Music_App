@@ -1,6 +1,7 @@
 package com.example.cwk_mwe.activity;
 
 import static com.example.cwk_mwe.utils.AppUtils.formatTime;
+import static com.example.cwk_mwe.utils.AppUtils.musicCardToJson;
 
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
@@ -12,11 +13,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
@@ -24,6 +27,10 @@ import androidx.annotation.RequiresApi;
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
 import com.example.cwk_mwe.utils.MusicCard;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PlayerActivity extends BaseActivity {
 
@@ -64,6 +71,13 @@ public class PlayerActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
 
+        setupUI();
+        setupPlaybackSpeed();
+        setupSeekBar();
+        setupBookmarkIcon();
+    }
+
+    private void setupUI() {
         ImageButton backButton = findViewById(R.id.back_button0);
         backButton.setOnClickListener(v -> finish());
 
@@ -106,17 +120,21 @@ public class PlayerActivity extends BaseActivity {
             }
         });
 
+        musicTitleTextView = findViewById(R.id.music_title);
+        musicArtistTextView = findViewById(R.id.music_artist);
+        musicAlbumTextView = findViewById(R.id.music_album);
+    }
+
+    private void setupPlaybackSpeed() {
         TextView playbackSpeedTextView = findViewById(R.id.playback_speed);
 
         // Load playback speed from SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
         float playbackSpeed = sharedPreferences.getFloat("playbackSpeed", 1.0f); // Default speed is 1.0f
         playbackSpeedTextView.setText(String.format("x%.1f", playbackSpeed));
+    }
 
-        musicTitleTextView = findViewById(R.id.music_title);
-        musicArtistTextView = findViewById(R.id.music_artist);
-        musicAlbumTextView = findViewById(R.id.music_album);
-
+    private void setupSeekBar() {
         seekBar = findViewById(R.id.music_seekbar);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -136,6 +154,47 @@ public class PlayerActivity extends BaseActivity {
         });
     }
 
+    private void setupBookmarkIcon() {
+        ImageView bookmarkIcon = findViewById(R.id.bookmark_icon);
+        bookmarkIcon.setOnClickListener(v -> {
+            if (isBound) {
+                MusicCard currentMusic = audioPlayerService.getCurrentMusicInfo();
+                if (currentMusic == null) {
+                    Toast.makeText(this, "Failed to add bookmark: \nNo current music", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                currentMusic.progress = audioPlayerService.getCurrentProgress();
+
+                if (currentMusic != null) {
+                    Log.d("PlayerActivity", "Bookmarking music: " + currentMusic.title + " at " + currentMusic.progress);
+                    SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                    // Retrieve existing array of music cards
+                    String musicCardsJson = sharedPreferences.getString("musicCards", "[]");
+                    JSONArray musicCardsArray;
+                    try {
+                        musicCardsArray = new JSONArray(musicCardsJson);
+                    } catch (JSONException e) {
+                        musicCardsArray = new JSONArray();
+                    }
+
+                    // Add new music card and progress
+                    JSONObject musicCardObject = musicCardToJson(currentMusic);
+                    musicCardsArray.put(musicCardObject);
+
+                    // Save updated array back to SharedPreferences
+                    editor.putString("musicCards", musicCardsArray.toString());
+                    editor.apply();
+
+                    Toast.makeText(this, "Bookmark added successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Failed to add bookmark", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -149,8 +208,6 @@ public class PlayerActivity extends BaseActivity {
         if (isBound) {
             unbindService(connection);
             isBound = false;
-//            stopSeekBarUpdate();
-//            stopCassetteRotation();
         }
     }
 
