@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
@@ -41,7 +43,15 @@ public class PlayerActivity extends BaseActivity {
     private TextView musicArtistTextView;
     private TextView musicAlbumTextView;
     private SeekBar seekBar;
-    private Handler handler = new Handler();
+    private Handler seekbarHandler = new Handler();
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                updateMusicInfo();
+            }
+        }
+    };
     private ObjectAnimator rotationAnimator;
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -50,6 +60,7 @@ public class PlayerActivity extends BaseActivity {
             AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) service;
             audioPlayerService = binder.getService();
             isBound = true;
+            audioPlayerService.setHandler(handler);
             updateMusicInfo();
             updatePlayPauseButton();
             updateSeekBar();
@@ -123,6 +134,18 @@ public class PlayerActivity extends BaseActivity {
         musicTitleTextView = findViewById(R.id.music_title);
         musicArtistTextView = findViewById(R.id.music_artist);
         musicAlbumTextView = findViewById(R.id.music_album);
+
+        ImageView stopButton = findViewById(R.id.stop_button);
+        stopButton.setOnClickListener(v -> {
+            if (isBound) {
+                audioPlayerService.seekTo(0);
+                audioPlayerService.pause();
+                seekBar.setProgress(0);
+                updateMusicTime();
+                updatePlayPauseButton();
+                pauseCassetteRotation();
+            }
+        });
     }
 
     private void setupPlaybackSpeed() {
@@ -195,6 +218,7 @@ public class PlayerActivity extends BaseActivity {
         });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -250,12 +274,12 @@ public class PlayerActivity extends BaseActivity {
             seekBar.setProgress(currentPosition);
             updateMusicTime();
 
-            handler.postDelayed(this::updateSeekBar, 1000);
+            seekbarHandler.postDelayed(this::updateSeekBar, 1000);
         }
     }
 
     private void stopSeekBarUpdate() {
-        handler.removeCallbacksAndMessages(null);
+        seekbarHandler.removeCallbacksAndMessages(null);
     }
 
     private void updateCassetteRotation() {

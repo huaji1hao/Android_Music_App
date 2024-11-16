@@ -4,7 +4,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -19,7 +21,7 @@ public class AudioPlayerService extends Service {
     public static final String ACTION_LOAD = "com.example.cwk_mwe.ACTION_LOAD";
     public static final String ACTION_STOP = "com.example.cwk_mwe.ACTION_STOP";
     private final IBinder binder = new LocalBinder();
-
+    private Handler handler;
     private AudiobookPlayer audiobookPlayer;
     private ArrayList<MusicCard> musicList;
     private int currentIndex = -1;
@@ -30,6 +32,12 @@ public class AudioPlayerService extends Service {
         super.onCreate();
         audiobookPlayer = new AudiobookPlayer();
         playbackSpeed = loadPlaybackSpeed();
+        audiobookPlayer.setOnCompletionListener(() -> {
+            playNext();
+            if (handler != null) {
+                handler.sendEmptyMessage(1);
+            }
+        });
         Log.d("AudioPlayerService", "Service created");
     }
 
@@ -190,5 +198,9 @@ public class AudioPlayerService extends Service {
     private float loadPlaybackSpeed() {
         SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
         return sharedPreferences.getFloat("playbackSpeed", 1.0f); // Default speed is 1.0f
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

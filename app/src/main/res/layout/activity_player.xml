@@ -93,18 +93,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/music_seekbar" />
 
+    <ImageView
+        android:id="@+id/stop_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="14dp"
+        android:src="@drawable/ic_stop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/music_seekbar" />
+
     <TextView
         android:id="@+id/playback_speed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="45dp"
-        android:layout_marginBottom="21dp"
-        android:text="x1.0"
-        android:textSize="24sp"
-        android:textColor="#000000"
+        android:layout_marginEnd="184dp"
+        android:layout_marginBottom="315dp"
         android:fontFamily="@font/ubuntu_bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/music_seekbar" />
+        android:text="x1.0"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/music_seekbar"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <SeekBar
         android:id="@+id/music_seekbar"
