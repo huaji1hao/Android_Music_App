@@ -7,14 +7,12 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.NotificationService;
-import com.example.cwk_mwe.utils.AppUtils;
 
 public class MainActivity extends BaseActivity {
 
@@ -29,23 +27,28 @@ public class MainActivity extends BaseActivity {
             return insets;
         });
 
+        handlePermissions();
+        setupButtons();
+    }
+
+    private void handlePermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, NotificationService.NOTIFICATION_PERMISSION_CODE);
             }
         }
+    }
 
+    private void setupButtons() {
         Button listButton = findViewById(R.id.list_button);
         listButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, ListActivity.class);
-            intent.putExtra("MAIN", AppUtils.SuccessCode);
             startActivity(intent);
         });
 
         Button playerButton = findViewById(R.id.player_button);
         playerButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, PlayerActivity.class);
-            intent.putExtra("MAIN", AppUtils.SuccessCode);
             startActivity(intent);
         });
 
@@ -60,7 +63,6 @@ public class MainActivity extends BaseActivity {
             finishAffinity(); // Close all activities and exit the app
             System.exit(0); // Ensure the app is completely closed
         });
-
     }
 
 

@@ -1,5 +1,7 @@
 package com.example.cwk_mwe.activity;
 
+import static com.example.cwk_mwe.utils.AppUtils.ACTION_LOAD;
+import static com.example.cwk_mwe.utils.AppUtils.ACTION_STOP;
 import static com.example.cwk_mwe.utils.AppUtils.formatTime;
 
 import android.content.Context;
@@ -78,14 +80,14 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         holder.itemView.setOnClickListener(v -> {
             // Stop the service if it is already running
             Intent stopIntent = new Intent(context, AudioPlayerService.class);
-            stopIntent.setAction(AudioPlayerService.ACTION_STOP);
+            stopIntent.setAction(ACTION_STOP);
             context.startService(stopIntent);
 
             // Use a delay to ensure the service has time to stop before starting a new one
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 // Load and play the new track
                 Intent serviceIntent = new Intent(context, AudioPlayerService.class);
-                serviceIntent.setAction(AudioPlayerService.ACTION_LOAD);
+                serviceIntent.setAction(ACTION_LOAD);
                 serviceIntent.putExtra("path", music.path);
                 serviceIntent.putExtra("progress", music.progress);
                 serviceIntent.putExtra("musicList", new ArrayList<>(musicList));
@@ -108,5 +110,10 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             artist = itemView.findViewById(R.id.music_artist);
             progress = itemView.findViewById(R.id.music_duration); // Assuming the same TextView is used for progress
         }
+    }
+
+    public void clearBookmarks() {
+        bookmarkList.clear();
+        notifyDataSetChanged();
     }
 }

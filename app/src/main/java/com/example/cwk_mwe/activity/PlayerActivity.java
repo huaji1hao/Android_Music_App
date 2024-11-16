@@ -1,5 +1,6 @@
 package com.example.cwk_mwe.activity;
 
+import static com.example.cwk_mwe.utils.AppUtils.MSG_UPDATE_MUSIC_INFO;
 import static com.example.cwk_mwe.utils.AppUtils.formatTime;
 import static com.example.cwk_mwe.utils.AppUtils.musicCardToJson;
 
@@ -35,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class PlayerActivity extends BaseActivity {
-
     private ImageView playPauseButton;
     private AudioPlayerService audioPlayerService;
     private boolean isBound = false;
@@ -44,11 +44,13 @@ public class PlayerActivity extends BaseActivity {
     private TextView musicAlbumTextView;
     private SeekBar seekBar;
     private Handler seekbarHandler = new Handler();
-    private Handler handler = new Handler(Looper.getMainLooper()) {
+
+    private Handler musicInfoHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 1) {
+            if (msg.what == MSG_UPDATE_MUSIC_INFO) {
                 updateMusicInfo();
+                updateCassetteRotation();
             }
         }
     };
@@ -60,7 +62,7 @@ public class PlayerActivity extends BaseActivity {
             AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) service;
             audioPlayerService = binder.getService();
             isBound = true;
-            audioPlayerService.setHandler(handler);
+            audioPlayerService.setHandler(musicInfoHandler);
             updateMusicInfo();
             updatePlayPauseButton();
             updateSeekBar();
@@ -114,8 +116,6 @@ public class PlayerActivity extends BaseActivity {
                     playPauseButton.setImageResource(R.drawable.ic_pause);
                 }
                 audioPlayerService.playNext();
-                updateMusicInfo();
-                updateCassetteRotation();
             }
         });
 
@@ -126,8 +126,6 @@ public class PlayerActivity extends BaseActivity {
                     playPauseButton.setImageResource(R.drawable.ic_pause);
                 }
                 audioPlayerService.playPrev();
-                updateMusicInfo();
-                updateCassetteRotation();
             }
         });
 

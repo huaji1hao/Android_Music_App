@@ -24,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListActivity extends BaseActivity {
-
-    private RecyclerView musicRecyclerView;
+    private BookmarkRecyclerViewAdapter bookmarkAdapter;
     private MusicRecyclerViewAdapter adapter;
     private List<MusicCard> musicList;
 
@@ -34,60 +33,63 @@ public class ListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_list);
+        
+        initializeMusicList();
+        setupRecyclerViews();
+        setupButtons();
+    }
 
-        Intent intent = getIntent();
-        int resultCode = intent.getIntExtra("MAIN", AppUtils.ErrorCode);
+    private void initializeMusicList() {
+        musicList = new ArrayList<>();
+        AppUtils.checkAndRequestPermissions(this, AppUtils.loadMusicFiles(musicList));
+    }
 
-        if (resultCode == AppUtils.SuccessCode) {
-            musicList = new ArrayList<>();
-            AppUtils.checkAndRequestPermissions(this, AppUtils.loadMusicFiles(musicList));
+    private void setupRecyclerViews() {
+        setupMusicRecyclerView();
+        setupBookmarkRecyclerView();
+    }
 
-            musicRecyclerView = findViewById(R.id.music_recycler_view);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
-                @Override
-                public boolean canScrollVertically() {
-                    return true;
-                }
+    private void setupMusicRecyclerView() {
+        RecyclerView musicRecyclerView = findViewById(R.id.music_recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public boolean canScrollVertically() {
+                return true;
+            }
 
-                @Override
-                public int getChildCount() {
-                    return Math.min(super.getChildCount(), 3); // Limit to 3 items
-                }
-            };
-            musicRecyclerView.setLayoutManager(layoutManager);
+            @Override
+            public int getChildCount() {
+                return Math.min(super.getChildCount(), 3); // Limit to 3 items
+            }
+        };
+        musicRecyclerView.setLayoutManager(layoutManager);
 
-            adapter = new MusicRecyclerViewAdapter(this, musicList);
-            musicRecyclerView.setAdapter(adapter);
+        adapter = new MusicRecyclerViewAdapter(this, musicList);
+        musicRecyclerView.setAdapter(adapter);
+    }
 
-            // Initialize bookmark RecyclerView
-            RecyclerView bookmarkRecyclerView = findViewById(R.id.bookmark_recycler_view);
-            LinearLayoutManager bookmarkLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
-                @Override
-                public boolean canScrollVertically() {
-                    return true;
-                }
+    private void setupBookmarkRecyclerView() {
+        RecyclerView bookmarkRecyclerView = findViewById(R.id.bookmark_recycler_view);
+        LinearLayoutManager bookmarkLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public boolean canScrollVertically() {
+                return true;
+            }
 
-                @Override
-                public int getChildCount() {
-                    return Math.min(super.getChildCount(), 4); // Limit to 4 items
-                }
-            };
-            bookmarkRecyclerView.setLayoutManager(bookmarkLayoutManager);
-            BookmarkRecyclerViewAdapter bookmarkAdapter = new BookmarkRecyclerViewAdapter(this, musicList);
-            bookmarkRecyclerView.setAdapter(bookmarkAdapter);
+            @Override
+            public int getChildCount() {
+                return Math.min(super.getChildCount(), 4); // Limit to 4 items
+            }
+        };
+        bookmarkRecyclerView.setLayoutManager(bookmarkLayoutManager);
+        bookmarkAdapter = new BookmarkRecyclerViewAdapter(this, musicList);
+        bookmarkRecyclerView.setAdapter(bookmarkAdapter);
+    }
 
-        } else {
-            Toast.makeText(this, "Error: Invalid result code", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
+    private void setupButtons() {
         ImageButton backButton = findViewById(R.id.back_button0);
         backButton.setOnClickListener(v -> finish());
 
-        setupClearButton();
-    }
-
-    private void setupClearButton() {
         ImageView clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
             SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
@@ -95,6 +97,9 @@ public class ListActivity extends BaseActivity {
             editor.remove("musicCards");
             editor.apply();
             Log.d("PlayerActivity", "All bookmarks cleared");
+
+            // Clear the bookmark list and notify the adapter
+            bookmarkAdapter.clearBookmarks();
         });
     }
 

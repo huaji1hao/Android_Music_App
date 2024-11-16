@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class AppUtils {
-
-    public static final int ErrorCode = 1;
-    public static final int SuccessCode = 0;
     public static final int MY_PERMISSIONS_REQUEST_READ_MEDIA_AUDIO = 1; // Constant for permission request code
+    public static final int MSG_UPDATE_MUSIC_INFO = 1;
+    public static final String ACTION_LOAD = "com.example.cwk_mwe.ACTION_LOAD";
+    public static final String ACTION_STOP = "com.example.cwk_mwe.ACTION_STOP";
 
     public static void checkAndRequestPermissions(Activity activity, Runnable onPermissionGranted) {
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {

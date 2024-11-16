@@ -1,25 +1,29 @@
 package com.example.cwk_mwe.service;
 
+import static com.example.cwk_mwe.utils.AppUtils.ACTION_LOAD;
+import static com.example.cwk_mwe.utils.AppUtils.ACTION_STOP;
+
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.cwk_mwe.utils.AppUtils;
 import com.example.cwk_mwe.utils.AudiobookPlayer;
 import com.example.cwk_mwe.utils.MusicCard;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AudioPlayerService extends Service {
-    public static final String ACTION_LOAD = "com.example.cwk_mwe.ACTION_LOAD";
-    public static final String ACTION_STOP = "com.example.cwk_mwe.ACTION_STOP";
     private final IBinder binder = new LocalBinder();
     private Handler handler;
     private AudiobookPlayer audiobookPlayer;
@@ -32,12 +36,7 @@ public class AudioPlayerService extends Service {
         super.onCreate();
         audiobookPlayer = new AudiobookPlayer();
         playbackSpeed = loadPlaybackSpeed();
-        audiobookPlayer.setOnCompletionListener(() -> {
-            playNext();
-            if (handler != null) {
-                handler.sendEmptyMessage(1);
-            }
-        });
+        audiobookPlayer.setOnCompletionListener(this::playNext);
         Log.d("AudioPlayerService", "Service created");
     }
 
@@ -82,6 +81,13 @@ public class AudioPlayerService extends Service {
 
         String path = intent.getStringExtra("path");
         if (path != null) {
+            File file = new File(path);
+            if (!file.exists()) {
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(() -> Toast.makeText(this, "Music file does not exist", Toast.LENGTH_SHORT).show());
+                return;
+            }
+
             currentIndex = getCurrentIndex(path);
             audiobookPlayer.load(path, playbackSpeed); // Load the specified path
             startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
@@ -171,6 +177,9 @@ public class AudioPlayerService extends Service {
             audiobookPlayer.load(path, playbackSpeed);
             audiobookPlayer.play();
             startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
+            if (handler != null){
+                handler.sendEmptyMessage(AppUtils.MSG_UPDATE_MUSIC_INFO);
+            }
         }
     }
 
