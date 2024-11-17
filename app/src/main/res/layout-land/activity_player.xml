@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -33,27 +34,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/ubuntu_bold"
-        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:maxLines="2"
         android:text="Music Title"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:maxLines="2"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/back_button0" />
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
 
     <TextView
         android:id="@+id/music_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:ellipsize="end"
         android:fontFamily="@font/ubuntu_regular"
+        android:maxLines="1"
         android:text="Artist"
         android:textSize="18sp"
-        android:maxLines="1"
-        android:ellipsize="end"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/music_title" />
 
@@ -61,38 +61,27 @@
         android:id="@+id/music_album"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
         android:fontFamily="@font/ubuntu_regular"
+        android:maxLines="1"
         android:text="Album"
         android:textSize="18sp"
-        android:maxLines="1"
-        android:ellipsize="end"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/music_artist" />
 
-    <TextView
-        android:id="@+id/playback_speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/ubuntu_bold"
-        android:text="x1.0"
-        android:textColor="#000000"
-        android:textSize="24sp"
-        android:translationY="35dp"
-        app:layout_constraintBaseline_toBottomOf="@id/music_album"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <ImageView
         android:id="@+id/cassette_image"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="213dp"
+        android:layout_height="212dp"
+        android:layout_marginTop="-5dp"
         android:src="@drawable/cassette"
+        android:translationY="60dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/music_album" />
+        app:layout_constraintTop_toBottomOf="@id/music_title" />
 
     <ImageView
         android:id="@+id/bookmark_icon"
@@ -115,6 +104,19 @@
         android:src="@drawable/ic_stop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/music_seekbar" />
+
+    <TextView
+        android:id="@+id/playback_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:fontFamily="@font/ubuntu_bold"
+        android:text="x1.0"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/music_title" />
 
     <SeekBar
         android:id="@+id/music_seekbar"
@@ -153,9 +155,10 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="12dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/music_seekbar">
 

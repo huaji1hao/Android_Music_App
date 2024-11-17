@@ -188,7 +188,7 @@ public class PlayerActivity extends BaseActivity {
 
                 if (currentMusic != null) {
                     Log.d("PlayerActivity", "Bookmarking music: " + currentMusic.title + " at " + currentMusic.progress);
-                    SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = getSharedPreferences("BookmarkPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
 
                     // Retrieve existing array of music cards

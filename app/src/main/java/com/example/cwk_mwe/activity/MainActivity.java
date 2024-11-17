@@ -93,14 +93,14 @@ public class MainActivity extends BaseActivity {
     private void setupButtons() {
         ImageView clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
-            SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences("BookmarkPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove("musicCards");
+            editor.clear();
             editor.apply();
             Log.d("PlayerActivity", "All bookmarks cleared");
 
             // Clear the bookmark list and notify the adapter
-            bookmarkAdapter.clearBookmarks();
+            bookmarkAdapter.reloadBookmarks();
         });
     }
 
@@ -147,6 +147,8 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.navigation_list);
+
+        bookmarkAdapter.reloadBookmarks();
     }
 
 }

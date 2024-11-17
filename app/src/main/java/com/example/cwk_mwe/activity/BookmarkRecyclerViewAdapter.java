@@ -42,7 +42,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     }
 
     private void loadMusicCardsFromCache() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("AudioPlayerPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("BookmarkPrefs", Context.MODE_PRIVATE);
         String musicCardsJson = sharedPreferences.getString("musicCards", "[]");
         try {
             JSONArray musicCardsArray = new JSONArray(musicCardsJson);
@@ -114,6 +114,12 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
     public void clearBookmarks() {
         bookmarkList.clear();
+        notifyDataSetChanged();
+    }
+
+    public void reloadBookmarks() {
+        bookmarkList.clear();
+        loadMusicCardsFromCache();
         notifyDataSetChanged();
     }
 }
