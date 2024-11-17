@@ -24,7 +24,7 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void applyBackgroundColor() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int defaultColor = Color.parseColor("#FAD0C4");
+        int defaultColor = Color.parseColor("#CFC7F8");
         int color = prefs.getInt(KEY_BACKGROUND_COLOR, defaultColor);
         getWindow().getDecorView().setBackgroundColor(color);
     }
@@ -36,4 +36,5 @@ public class BaseActivity extends AppCompatActivity {
         editor.apply();
         applyBackgroundColor();
     }
+
 }

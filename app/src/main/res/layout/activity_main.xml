@@ -7,91 +7,91 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/list_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
         android:fontFamily="@font/ubuntu_bold"
         android:scaleX="2"
         android:scaleY="2"
-        android:text="Audiobook App"
-        android:textColor="#D96C6C"
+        android:text="Music List"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/list_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        tools:ignore="MissingConstraints" />
-
-    <Button
-        android:id="@+id/list_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF9A9E"
-        android:fontFamily="@font/ubuntu_regular"
-        android:text="Music List"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/player_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintWidth_percent="0.4" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/player_button"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/list_text1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF9A9E"
-        android:fontFamily="@font/ubuntu_regular"
-        android:text="Music Player"
-        android:textColor="#FFFFFF"
+        android:layout_marginTop="410dp"
+        android:fontFamily="@font/ubuntu_bold"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:text="Bookmark List"
+        android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/settings_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/list_button"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintWidth_percent="0.4" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/settings_button"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF9A9E"
-        android:fontFamily="@font/ubuntu_regular"
-        android:text="Settings"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/exit_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_button"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintWidth_percent="0.4" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
 
-    <Button
-        android:id="@+id/exit_button"
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/music_recycler_view"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF9A9E"
-        android:fontFamily="@font/ubuntu_regular"
-        android:text="Exit"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_button"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintWidth_percent="0.4" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.225" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bookmark_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/list_text1"
+        app:layout_constraintVertical_bias="0.225" />
+
+    <ImageView
+        android:id="@+id/clear_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/backspace"
+        app:layout_constraintBottom_toBottomOf="@id/list_text1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/list_text1"
+        app:layout_constraintTop_toTopOf="@id/list_text1"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="99dp"
+        android:background="?android:attr/windowBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -51,8 +51,8 @@ public class SettingActivity extends BaseActivity {
         ImageView changeColorButton3 = findViewById(R.id.change_color_button3);
 
         changeColorButton1.setOnClickListener(v -> applyBackgroundColor(0xFFFAD0C4));
-        changeColorButton2.setOnClickListener(v -> applyBackgroundColor(0xFF8ec5fc));
-        changeColorButton3.setOnClickListener(v -> applyBackgroundColor(0xffe0c3fc));
+        changeColorButton2.setOnClickListener(v -> applyBackgroundColor(0xFFCFC7F8));
+        changeColorButton3.setOnClickListener(v -> applyBackgroundColor(0xffE0C3FC));
 
         ImageButton backButton = findViewById(R.id.back_button0);
         backButton.setOnClickListener(v -> finish());

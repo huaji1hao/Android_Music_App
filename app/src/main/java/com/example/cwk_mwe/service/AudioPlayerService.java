@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.cwk_mwe.utils.EnhancedAudiobookPlayer;
 import com.example.cwk_mwe.utils.AppUtils;
 import com.example.cwk_mwe.utils.AudiobookPlayer;
 import com.example.cwk_mwe.utils.MusicCard;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 public class AudioPlayerService extends Service {
     private final IBinder binder = new LocalBinder();
     private Handler handler;
-    private AudiobookPlayer audiobookPlayer;
+    private EnhancedAudiobookPlayer audiobookPlayer;
     private ArrayList<MusicCard> musicList;
     private int currentIndex = -1;
     private float playbackSpeed = 1;
@@ -34,7 +35,7 @@ public class AudioPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        audiobookPlayer = new AudiobookPlayer();
+        audiobookPlayer = new EnhancedAudiobookPlayer();
         playbackSpeed = loadPlaybackSpeed();
         audiobookPlayer.setOnCompletionListener(this::playNext);
         Log.d("AudioPlayerService", "Service created");

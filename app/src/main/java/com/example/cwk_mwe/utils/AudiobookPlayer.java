@@ -5,17 +5,17 @@ package com.example.cwk_mwe.utils;
  */
 
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 import java.io.IOException;
+
 public class AudiobookPlayer {
-    public interface OnCompletionListener {
-        void onCompletion();
-    }
+
     protected MediaPlayer mediaPlayer;
     protected AudiobookPlayerState state;
     protected String filePath;
-    private OnCompletionListener onCompletionListener;
+
     public enum AudiobookPlayerState {
         ERROR,
         PLAYING,
@@ -26,9 +26,7 @@ public class AudiobookPlayer {
     public AudiobookPlayer() {
         this.state = AudiobookPlayerState.STOPPED;
     }
-    public void setOnCompletionListener(OnCompletionListener listener) {
-        this.onCompletionListener = listener;
-    }
+
     public AudiobookPlayerState getState() {
         return this.state;
     }
@@ -58,12 +56,6 @@ public class AudiobookPlayer {
             this.state = AudiobookPlayerState.ERROR;
             return;
         }
-
-        mediaPlayer.setOnCompletionListener(mp -> {
-            if (onCompletionListener != null) {
-                onCompletionListener.onCompletion();
-            }
-        });
 
         this.state = AudiobookPlayerState.PLAYING;
         mediaPlayer.start();
