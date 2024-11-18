@@ -83,6 +83,7 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
     }
 
     public void reloadMusicList() {
+        musicList.clear();
         AppUtils.loadMusicFiles(musicList).run();
         notifyDataSetChanged();
     }

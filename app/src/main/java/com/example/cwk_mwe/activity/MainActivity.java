@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cwk_mwe.utils.MusicCard;
 import com.example.cwk_mwe.R;
+import com.example.cwk_mwe.utils.VerticalSpaceItemDecoration;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -43,12 +44,6 @@ public class MainActivity extends BaseActivity {
         setupBottomNavigation();
         handlePermissions();
     }
-
-//    private void initializeMusicList() {
-//        musicList = new ArrayList<>();
-//        // Load music files
-//        AppUtils.requestPermissionsAndRun(this, AppUtils.loadMusicFiles(musicList));
-//    }
 
     private void setupRecyclerViews() {
         setupMusicRecyclerView();
@@ -72,6 +67,10 @@ public class MainActivity extends BaseActivity {
         musicList = new ArrayList<>();
         musicAdapter = new MusicRecyclerViewAdapter(this, musicList);
         musicRecyclerView.setAdapter(musicAdapter);
+
+        int verticalSpaceHeight = getResources().getDimensionPixelSize(R.dimen.recycler_view_item_space);
+        musicRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(verticalSpaceHeight));
+
     }
 
     private void setupBookmarkRecyclerView() {
@@ -90,6 +89,9 @@ public class MainActivity extends BaseActivity {
         bookmarkRecyclerView.setLayoutManager(bookmarkLayoutManager);
         bookmarkAdapter = new BookmarkRecyclerViewAdapter(this, musicList);
         bookmarkRecyclerView.setAdapter(bookmarkAdapter);
+
+        int verticalSpaceHeight = getResources().getDimensionPixelSize(R.dimen.recycler_view_item_space);
+        bookmarkRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(verticalSpaceHeight));
     }
 
     private void setupButtons() {
@@ -178,7 +180,7 @@ public class MainActivity extends BaseActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.navigation_list);
 
-//        musicAdapter.reloadMusicList();
+        musicAdapter.reloadMusicList();
         bookmarkAdapter.reloadBookmarks();
     }
 
