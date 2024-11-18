@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
+import com.example.cwk_mwe.utils.AppUtils;
 import com.example.cwk_mwe.utils.MusicCard;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
                 serviceIntent.putExtra("path", music.path);
                 serviceIntent.putExtra("musicList", new ArrayList<>(musicList));
                 context.startService(serviceIntent);
-            }, 500); // Adjust the delay as needed
+            }, 10); // Adjust the delay as needed
         });
     }
 
@@ -79,5 +80,10 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
             artist = itemView.findViewById(R.id.music_artist);
             duration = itemView.findViewById(R.id.music_duration);
         }
+    }
+
+    public void reloadMusicList() {
+        AppUtils.loadMusicFiles(musicList).run();
+        notifyDataSetChanged();
     }
 }

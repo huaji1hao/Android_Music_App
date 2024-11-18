@@ -3,10 +3,14 @@ package com.example.cwk_mwe.service;
 import static com.example.cwk_mwe.utils.AppUtils.ACTION_LOAD;
 import static com.example.cwk_mwe.utils.AppUtils.ACTION_STOP;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -14,7 +18,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.example.cwk_mwe.utils.CallManager;
 import com.example.cwk_mwe.utils.EnhancedAudiobookPlayer;
 import com.example.cwk_mwe.utils.AppUtils;
 import com.example.cwk_mwe.utils.AudiobookPlayer;
@@ -23,10 +30,13 @@ import com.example.cwk_mwe.utils.MusicCard;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class AudioPlayerService extends Service {
     private final IBinder binder = new LocalBinder();
     private Handler handler;
+    private CallManager callManager;
     private EnhancedAudiobookPlayer audiobookPlayer;
     private ArrayList<MusicCard> musicList;
     private int currentIndex = -1;
@@ -39,6 +49,21 @@ public class AudioPlayerService extends Service {
         playbackSpeed = loadPlaybackSpeed();
         audiobookPlayer.setOnCompletionListener(this::playNext);
         Log.d("AudioPlayerService", "Service created");
+
+        registerCallManager();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (audiobookPlayer != null) {
+            audiobookPlayer.stop();
+        }
+        Log.d("AudioPlayerService", "Service destroyed");
+
+        if(callManager != null) {
+            callManager.unregister();
+        }
     }
 
     @Nullable
@@ -91,7 +116,7 @@ public class AudioPlayerService extends Service {
 
             currentIndex = getCurrentIndex(path);
             audiobookPlayer.load(path, playbackSpeed); // Load the specified path
-            startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
+            manageNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
         }
 
         int progress = intent.getIntExtra("progress", 0);
@@ -100,19 +125,11 @@ public class AudioPlayerService extends Service {
 
     private void handleStopAction() {
         audiobookPlayer.stop();
-        startNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
+        manageNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
         stopSelf();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (audiobookPlayer != null) {
-            audiobookPlayer.stop();
-        }
-    }
-
-    private void startNotificationService(String action) {
+    public void manageNotificationService(String action) {
         Intent notificationIntent = new Intent(this, NotificationService.class);
         notificationIntent.setAction(action);
         startService(notificationIntent);
@@ -150,7 +167,6 @@ public class AudioPlayerService extends Service {
 
     public void play() {
         audiobookPlayer.play();
-        startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
     }
 
     public void pause() {
@@ -177,7 +193,7 @@ public class AudioPlayerService extends Service {
             String path = musicList.get(currentIndex).path;
             audiobookPlayer.load(path, playbackSpeed);
             audiobookPlayer.play();
-            startNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
+            manageNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
             if (handler != null){
                 handler.sendEmptyMessage(AppUtils.MSG_UPDATE_MUSIC_INFO);
             }
@@ -212,5 +228,11 @@ public class AudioPlayerService extends Service {
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    private void registerCallManager() {
+        Executor executor = Executors.newSingleThreadExecutor();
+        callManager = new CallManager(this, this, executor);
+        callManager.register();
     }
 }

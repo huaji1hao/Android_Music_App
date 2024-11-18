@@ -29,6 +29,7 @@ import androidx.annotation.RequiresApi;
 
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
+import com.example.cwk_mwe.service.NotificationService;
 import com.example.cwk_mwe.utils.MusicCard;
 
 import org.json.JSONArray;
@@ -97,12 +98,19 @@ public class PlayerActivity extends BaseActivity {
         playPauseButton = findViewById(R.id.play_pause_button);
         playPauseButton.setOnClickListener(v -> {
             if (isBound) {
+                MusicCard currentMusic = audioPlayerService.getCurrentMusicInfo();
+                if (currentMusic == null) {
+                    Toast.makeText(this, "Failed to play music: \nNo current music", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (audioPlayerService.isPlaying()) {
                     audioPlayerService.pause();
+                    audioPlayerService.manageNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
                     playPauseButton.setImageResource(R.drawable.ic_play);
                     pauseCassetteRotation();
                 } else {
                     audioPlayerService.play();
+                    audioPlayerService.manageNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
                     playPauseButton.setImageResource(R.drawable.ic_pause);
                     resumeCassetteRotation();
                 }
@@ -138,6 +146,7 @@ public class PlayerActivity extends BaseActivity {
             if (isBound) {
                 audioPlayerService.seekTo(0);
                 audioPlayerService.pause();
+                audioPlayerService.manageNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
                 seekBar.setProgress(0);
                 updateMusicTime();
                 updatePlayPauseButton();

@@ -4,15 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
-import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.example.cwk_mwe.service.NotificationService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,27 +20,16 @@ import java.util.Locale;
 
 public class AppUtils {
     public static final int MY_PERMISSIONS_REQUEST_READ_MEDIA_AUDIO = 1; // Constant for permission request code
+    public static final int PERMISSION_REQUEST_CODE = 1;
     public static final int MSG_UPDATE_MUSIC_INFO = 1;
+    public static final int REQUEST_POST_NOTIFICATIONS = 1;
+    public static final int NOTIFICATION_PERMISSION_CODE = 1001;
+
     public static final String ACTION_LOAD = "com.example.cwk_mwe.ACTION_LOAD";
     public static final String ACTION_STOP = "com.example.cwk_mwe.ACTION_STOP";
 
-    public static void checkAndRequestPermissions(Activity activity, Runnable onPermissionGranted) {
-        if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.READ_MEDIA_AUDIO)) {
-                new AlertDialog.Builder(activity)
-                        .setTitle("Permission needed")
-                        .setMessage("This permission is needed to access the music files on your device.")
-                        .setPositiveButton("OK", (dialog, which) -> ActivityCompat.requestPermissions(activity,
-                                new String[]{android.Manifest.permission.READ_MEDIA_AUDIO},
-                                MY_PERMISSIONS_REQUEST_READ_MEDIA_AUDIO))
-                        .create()
-                        .show();
-            } else {
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.READ_MEDIA_AUDIO},
-                        MY_PERMISSIONS_REQUEST_READ_MEDIA_AUDIO);
-            }
-        } else {
+    public static void requestPermissionsAndRun(Activity activity, Runnable onPermissionGranted) {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             // Permission already granted, execute the runnable
             onPermissionGranted.run();
         }

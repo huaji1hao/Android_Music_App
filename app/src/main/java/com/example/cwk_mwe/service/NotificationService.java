@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat;
 import com.example.cwk_mwe.R;
 
 public class NotificationService extends Service {
-    public static final int NOTIFICATION_PERMISSION_CODE = 1001;
     public static final String CHANNEL_ID = "AudioPlayerChannel";
     public static final String ACTION_SHOW_NOTIFICATION = "com.example.cwk_mwe.ACTION_SHOW_NOTIFICATION";
     public static final String ACTION_HIDE_NOTIFICATION = "com.example.cwk_mwe.ACTION_HIDE_NOTIFICATION";
@@ -25,11 +24,14 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent == null || intent.getAction() == null) {
+            return START_STICKY;
+        }
+
         String action = intent.getAction();
         if (ACTION_SHOW_NOTIFICATION.equals(action)) {
             showNotification();
         } else if (ACTION_HIDE_NOTIFICATION.equals(action)) {
-            stopForeground(true);
             stopSelf();
         }
         return START_STICKY;
@@ -60,6 +62,7 @@ public class NotificationService extends Service {
                 .setContentTitle("Audiobook Player")
                 .setContentText("Playing audiobook")
                 .setSmallIcon(R.drawable.ic_audiobook) // Replace with your icon
+                .setOngoing(true) // Make the notification ongoing
                 .build();
         startForeground(1, notification);
     }

@@ -92,7 +92,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
                 serviceIntent.putExtra("progress", music.progress);
                 serviceIntent.putExtra("musicList", new ArrayList<>(musicList));
                 context.startService(serviceIntent);
-            }, 500); // Adjust the delay as needed
+            }, 10); // Adjust the delay as needed
         });
     }
 
@@ -110,11 +110,6 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             artist = itemView.findViewById(R.id.music_artist);
             progress = itemView.findViewById(R.id.music_duration); // Assuming the same TextView is used for progress
         }
-    }
-
-    public void clearBookmarks() {
-        bookmarkList.clear();
-        notifyDataSetChanged();
     }
 
     public void reloadBookmarks() {

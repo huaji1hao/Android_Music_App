@@ -1,10 +1,12 @@
 package com.example.cwk_mwe.activity;
 
 
+import static com.example.cwk_mwe.utils.AppUtils.PERMISSION_REQUEST_CODE;
+
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +15,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cwk_mwe.service.NotificationService;
 import com.example.cwk_mwe.utils.MusicCard;
 import com.example.cwk_mwe.R;
-import com.example.cwk_mwe.utils.AppUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import java.util.List;
 
 public class MainActivity extends BaseActivity {
     private BookmarkRecyclerViewAdapter bookmarkAdapter;
-    private MusicRecyclerViewAdapter adapter;
+    private MusicRecyclerViewAdapter musicAdapter;
     private List<MusicCard> musicList;
 
     @Override
@@ -36,17 +38,17 @@ public class MainActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        handlePermissions();
-        initializeMusicList();
         setupRecyclerViews();
         setupButtons();
         setupBottomNavigation();
+        handlePermissions();
     }
 
-    private void initializeMusicList() {
-        musicList = new ArrayList<>();
-        AppUtils.checkAndRequestPermissions(this, AppUtils.loadMusicFiles(musicList));
-    }
+//    private void initializeMusicList() {
+//        musicList = new ArrayList<>();
+//        // Load music files
+//        AppUtils.requestPermissionsAndRun(this, AppUtils.loadMusicFiles(musicList));
+//    }
 
     private void setupRecyclerViews() {
         setupMusicRecyclerView();
@@ -67,9 +69,9 @@ public class MainActivity extends BaseActivity {
             }
         };
         musicRecyclerView.setLayoutManager(layoutManager);
-
-        adapter = new MusicRecyclerViewAdapter(this, musicList);
-        musicRecyclerView.setAdapter(adapter);
+        musicList = new ArrayList<>();
+        musicAdapter = new MusicRecyclerViewAdapter(this, musicList);
+        musicRecyclerView.setAdapter(musicAdapter);
     }
 
     private void setupBookmarkRecyclerView() {
@@ -123,19 +125,47 @@ public class MainActivity extends BaseActivity {
     }
 
     private void handlePermissions() {
+        List<String> permissionsNeeded = new ArrayList<>();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, NotificationService.NOTIFICATION_PERMISSION_CODE);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.POST_NOTIFICATIONS);
             }
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.READ_CALL_LOG);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.READ_MEDIA_AUDIO);
+        }
+
+        if (!permissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[0]), PERMISSION_REQUEST_CODE);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == AppUtils.MY_PERMISSIONS_REQUEST_READ_MEDIA_AUDIO) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                AppUtils.loadMusicFiles(musicList).run();
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean allPermissionsGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+
+            if (allPermissionsGranted) {
+                // All permissions are granted, load the music files
+                musicAdapter.reloadMusicList();
             } else {
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
@@ -148,6 +178,7 @@ public class MainActivity extends BaseActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.navigation_list);
 
+//        musicAdapter.reloadMusicList();
         bookmarkAdapter.reloadBookmarks();
     }
 
