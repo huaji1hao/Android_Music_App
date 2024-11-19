@@ -1,11 +1,10 @@
-package com.example.cwk_mwe.utils;
+package com.example.cwk_mwe.player;
 
 /**
  * Created by pszat on 14/05/24
  */
 
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 import java.io.IOException;

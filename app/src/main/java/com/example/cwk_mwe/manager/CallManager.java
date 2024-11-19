@@ -1,5 +1,5 @@
 // CallManager.java
-package com.example.cwk_mwe.utils;
+package com.example.cwk_mwe.manager;
 
 import android.content.Context;
 import android.telephony.PhoneStateListener;
@@ -34,6 +34,7 @@ public class CallManager {
             this.audioPlayerService = audioPlayerService;
         }
 
+        // When the phone is ringing or in a call, pause the audio player
         @Override
         public void onCallStateChanged(int state, String phoneNumber) {
             switch (state) {

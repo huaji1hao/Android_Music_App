@@ -16,11 +16,9 @@ import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
 
 public class SettingActivity extends BaseActivity {
-
     private AudioPlayerService audioPlayerService;
     private boolean isServiceBound = false;
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) service;
@@ -71,14 +69,10 @@ public class SettingActivity extends BaseActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Do nothing
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // Do nothing
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 

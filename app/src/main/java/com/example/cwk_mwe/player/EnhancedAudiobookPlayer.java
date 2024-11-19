@@ -1,9 +1,7 @@
-package com.example.cwk_mwe.utils;
+package com.example.cwk_mwe.player;
 
 public class EnhancedAudiobookPlayer extends AudiobookPlayer {
-
     private OnCompletionListener onCompletionListener;
-
     public interface OnCompletionListener {
         void onCompletion();
     }
@@ -12,6 +10,7 @@ public class EnhancedAudiobookPlayer extends AudiobookPlayer {
         this.onCompletionListener = listener;
     }
 
+    // When the media player finishes playing the audio file, call the onCompletion method
     @Override
     public void load(String filePath, float speed) {
         super.load(filePath, speed);

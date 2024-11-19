@@ -1,5 +1,6 @@
 package com.example.cwk_mwe.service;
 
+import static com.example.cwk_mwe.utils.Constants.*;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,9 +13,6 @@ import androidx.core.app.NotificationCompat;
 import com.example.cwk_mwe.R;
 
 public class NotificationService extends Service {
-    public static final String CHANNEL_ID = "AudioPlayerChannel";
-    public static final String ACTION_SHOW_NOTIFICATION = "com.example.cwk_mwe.ACTION_SHOW_NOTIFICATION";
-    public static final String ACTION_HIDE_NOTIFICATION = "com.example.cwk_mwe.ACTION_HIDE_NOTIFICATION";
 
     @Override
     public void onCreate() {
@@ -22,6 +20,7 @@ public class NotificationService extends Service {
         createNotificationChannel();
     }
 
+    // Handle the notification service's intents
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent == null || intent.getAction() == null) {
@@ -43,6 +42,7 @@ public class NotificationService extends Service {
         return null;
     }
 
+    // Create the audio player notification channel
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Audio Player Channel";
@@ -57,6 +57,7 @@ public class NotificationService extends Service {
         }
     }
 
+    // Show the notification
     private void showNotification() {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Audiobook Player")
@@ -64,6 +65,6 @@ public class NotificationService extends Service {
                 .setSmallIcon(R.drawable.ic_audiobook) // Replace with your icon
                 .setOngoing(true) // Make the notification ongoing
                 .build();
-        startForeground(1, notification);
+        startForeground(NOTIFICATION_ID, notification);
     }
 }

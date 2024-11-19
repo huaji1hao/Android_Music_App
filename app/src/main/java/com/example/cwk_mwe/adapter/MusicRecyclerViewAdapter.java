@@ -1,12 +1,11 @@
-package com.example.cwk_mwe.activity;
+package com.example.cwk_mwe.adapter;
 
-import static com.example.cwk_mwe.utils.AppUtils.ACTION_LOAD;
-import static com.example.cwk_mwe.utils.AppUtils.ACTION_STOP;
 import static com.example.cwk_mwe.utils.AppUtils.formatTime;
+import static com.example.cwk_mwe.utils.Constants.ACTION_LOAD;
+import static com.example.cwk_mwe.utils.Constants.ACTION_STOP;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -19,48 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
-import com.example.cwk_mwe.utils.MusicCard;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.cwk_mwe.utils.AppUtils;
+import com.example.cwk_mwe.models.MusicCard;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRecyclerViewAdapter.MusicViewHolder> {
+public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecyclerViewAdapter.MusicViewHolder> {
+    private final List<MusicCard> musicList;
+    private final Context context;
 
-    private List<MusicCard> bookmarkList;
-    private List<MusicCard> musicList;
-    private Context context;
-
-    public BookmarkRecyclerViewAdapter(Context context, List<MusicCard> musicList) {
+    public MusicRecyclerViewAdapter(Context context, List<MusicCard> musicList) {
         this.context = context;
-        this.bookmarkList = new ArrayList<>();
         this.musicList = musicList;
-        loadMusicCardsFromCache();
-    }
-
-    private void loadMusicCardsFromCache() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("BookmarkPrefs", Context.MODE_PRIVATE);
-        String musicCardsJson = sharedPreferences.getString("musicCards", "[]");
-        try {
-            JSONArray musicCardsArray = new JSONArray(musicCardsJson);
-            for (int i = 0; i < musicCardsArray.length(); i++) {
-                JSONObject musicCardObject = musicCardsArray.getJSONObject(i);
-                MusicCard musicCard = new MusicCard(
-                        musicCardObject.getString("title"),
-                        musicCardObject.getString("artist"),
-                        musicCardObject.getString("album"),
-                        musicCardObject.getString("duration"),
-                        musicCardObject.getString("path"),
-                        musicCardObject.getInt("progress")
-                );
-                bookmarkList.add(musicCard);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @NonNull
@@ -70,12 +40,13 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         return new MusicViewHolder(view);
     }
 
+    // Load the music file and play it when the user clicks on it
     @Override
     public void onBindViewHolder(@NonNull MusicViewHolder holder, int position) {
-        MusicCard music = bookmarkList.get(position);
+        MusicCard music = musicList.get(position);
         holder.title.setText(music.title);
         holder.artist.setText(music.artist);
-        holder.progress.setText(String.format("at %s", formatTime(music.progress)));
+        holder.duration.setText(formatTime(music.duration));
 
         holder.itemView.setOnClickListener(v -> {
             // Stop the service if it is already running
@@ -89,7 +60,6 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
                 Intent serviceIntent = new Intent(context, AudioPlayerService.class);
                 serviceIntent.setAction(ACTION_LOAD);
                 serviceIntent.putExtra("path", music.path);
-                serviceIntent.putExtra("progress", music.progress);
                 serviceIntent.putExtra("musicList", new ArrayList<>(musicList));
                 context.startService(serviceIntent);
             }, 10); // Adjust the delay as needed
@@ -98,23 +68,24 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
     @Override
     public int getItemCount() {
-        return bookmarkList.size();
+        return musicList.size();
     }
 
     public static class MusicViewHolder extends RecyclerView.ViewHolder {
-        TextView title, artist, progress;
+        TextView title, artist, duration;
 
         public MusicViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.music_title);
             artist = itemView.findViewById(R.id.music_artist);
-            progress = itemView.findViewById(R.id.music_duration); // Assuming the same TextView is used for progress
+            duration = itemView.findViewById(R.id.music_duration);
         }
     }
 
-    public void reloadBookmarks() {
-        bookmarkList.clear();
-        loadMusicCardsFromCache();
+    // Clear the list and reload the music files
+    public void reloadMusicList() {
+        musicList.clear();
+        AppUtils.loadMusicFiles(musicList).run();
         notifyDataSetChanged();
     }
 }

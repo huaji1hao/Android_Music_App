@@ -1,16 +1,11 @@
 package com.example.cwk_mwe.service;
 
-import static com.example.cwk_mwe.utils.AppUtils.ACTION_LOAD;
-import static com.example.cwk_mwe.utils.AppUtils.ACTION_STOP;
+import static com.example.cwk_mwe.utils.Constants.*;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -18,14 +13,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.example.cwk_mwe.utils.CallManager;
-import com.example.cwk_mwe.utils.EnhancedAudiobookPlayer;
-import com.example.cwk_mwe.utils.AppUtils;
-import com.example.cwk_mwe.utils.AudiobookPlayer;
-import com.example.cwk_mwe.utils.MusicCard;
+import com.example.cwk_mwe.manager.CallManager;
+import com.example.cwk_mwe.player.EnhancedAudiobookPlayer;
+import com.example.cwk_mwe.player.AudiobookPlayer;
+import com.example.cwk_mwe.models.MusicCard;
 
 import java.io.File;
 import java.io.Serializable;
@@ -47,10 +39,11 @@ public class AudioPlayerService extends Service {
         super.onCreate();
         audiobookPlayer = new EnhancedAudiobookPlayer();
         playbackSpeed = loadPlaybackSpeed();
-        audiobookPlayer.setOnCompletionListener(this::playNext);
-        Log.d("AudioPlayerService", "Service created");
 
+        // Set the listener for when the player completes playing the current music
+        audiobookPlayer.setOnCompletionListener(this::playNext);
         registerCallManager();
+        Log.d("AudioPlayerService", "Service created");
     }
 
     @Override
@@ -59,11 +52,12 @@ public class AudioPlayerService extends Service {
         if (audiobookPlayer != null) {
             audiobookPlayer.stop();
         }
-        Log.d("AudioPlayerService", "Service destroyed");
 
         if(callManager != null) {
             callManager.unregister();
         }
+
+        Log.d("AudioPlayerService", "Service destroyed");
     }
 
     @Nullable
@@ -78,6 +72,7 @@ public class AudioPlayerService extends Service {
         }
     }
 
+    // Handle the actions of the service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
@@ -99,12 +94,14 @@ public class AudioPlayerService extends Service {
     }
 
     private void handleLoadAction(Intent intent) {
+        // Load the music list from the intent
         Serializable serializableList = intent.getSerializableExtra("musicList");
         if (serializableList instanceof ArrayList<?>) {
             musicList = (ArrayList<MusicCard>) serializableList;
             Log.d("AudioPlayerService", "Music list loaded with " + musicList.size() + " items");
         }
 
+        // Play the music at the specified path and progress
         String path = intent.getStringExtra("path");
         if (path != null) {
             File file = new File(path);
@@ -116,25 +113,30 @@ public class AudioPlayerService extends Service {
 
             currentIndex = getCurrentIndex(path);
             audiobookPlayer.load(path, playbackSpeed); // Load the specified path
-            manageNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
-        }
+            manageNotificationService(ACTION_SHOW_NOTIFICATION);
 
-        int progress = intent.getIntExtra("progress", 0);
-        audiobookPlayer.skipTo(progress); // Skip to the specified progress
+            int progress = intent.getIntExtra("progress", 0);
+            audiobookPlayer.skipTo(progress); // Skip to the specified progress
+        } else {
+            Log.d("AudioPlayerService", "Path is null");
+        }
     }
 
+    // Stop the player and hide the notification
     private void handleStopAction() {
         audiobookPlayer.stop();
-        manageNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
+        manageNotificationService(ACTION_HIDE_NOTIFICATION);
         stopSelf();
     }
 
+    // Manage the notification service
     public void manageNotificationService(String action) {
         Intent notificationIntent = new Intent(this, NotificationService.class);
         notificationIntent.setAction(action);
         startService(notificationIntent);
     }
 
+    // Get the information of the music being played
     public MusicCard getCurrentMusicInfo() {
         if (currentIndex >= 0 && currentIndex < musicList.size()) {
             return musicList.get(currentIndex);
@@ -142,6 +144,7 @@ public class AudioPlayerService extends Service {
         return null;
     }
 
+    // Get the index of the music card being played
     private int getCurrentIndex(String path) {
         for (int i = 0; i < musicList.size(); i++) {
             if (musicList.get(i).path.equals(path)) {
@@ -151,6 +154,7 @@ public class AudioPlayerService extends Service {
         return -1;
     }
 
+    // Get the duration of the music being played
     public int getDuration() {
         if(currentIndex < 0 || currentIndex >= musicList.size())
             return 0;
@@ -173,6 +177,7 @@ public class AudioPlayerService extends Service {
         audiobookPlayer.pause();
     }
 
+    // Play the next music in the list
     public void playNext() {
         if (musicList != null && !musicList.isEmpty()) {
             currentIndex = (currentIndex + 1) % musicList.size();
@@ -180,6 +185,7 @@ public class AudioPlayerService extends Service {
         }
     }
 
+    // Play the previous music in the list
     public void playPrev() {
         if (musicList != null && !musicList.isEmpty()) {
             currentIndex = (currentIndex - 1 + musicList.size()) % musicList.size();
@@ -187,23 +193,26 @@ public class AudioPlayerService extends Service {
         }
     }
 
+    // Play the current music in the list and update the music information
     private void playCurrent() {
         if (currentIndex >= 0 && currentIndex < musicList.size()) {
             audiobookPlayer.stop();
             String path = musicList.get(currentIndex).path;
             audiobookPlayer.load(path, playbackSpeed);
             audiobookPlayer.play();
-            manageNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
+            manageNotificationService(ACTION_SHOW_NOTIFICATION);
             if (handler != null){
-                handler.sendEmptyMessage(AppUtils.MSG_UPDATE_MUSIC_INFO);
+                handler.sendEmptyMessage(MSG_UPDATE_MUSIC_INFO);
             }
         }
     }
 
+    // Get the current state of the player
     public boolean isPlaying() {
         return audiobookPlayer.getState() == AudiobookPlayer.AudiobookPlayerState.PLAYING;
     }
 
+    // Set the playback speed of the player
     public void setPlaybackSpeed(float speed) {
         playbackSpeed = speed;
         audiobookPlayer.setPlaybackSpeed(speed);
@@ -214,6 +223,7 @@ public class AudioPlayerService extends Service {
         return playbackSpeed;
     }
 
+    // Save the playback speed to the shared preferences
     private void savePlaybackSpeed(float speed) {
         SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -221,6 +231,7 @@ public class AudioPlayerService extends Service {
         editor.apply();
     }
 
+    // Load the playback speed from the shared preferences
     private float loadPlaybackSpeed() {
         SharedPreferences sharedPreferences = getSharedPreferences("AudioPlayerPrefs", MODE_PRIVATE);
         return sharedPreferences.getFloat("playbackSpeed", 1.0f); // Default speed is 1.0f
@@ -230,6 +241,7 @@ public class AudioPlayerService extends Service {
         this.handler = handler;
     }
 
+    // Register the call manager
     private void registerCallManager() {
         Executor executor = Executors.newSingleThreadExecutor();
         callManager = new CallManager(this, this, executor);

@@ -1,8 +1,8 @@
 package com.example.cwk_mwe.activity;
 
-import static com.example.cwk_mwe.utils.AppUtils.MSG_UPDATE_MUSIC_INFO;
 import static com.example.cwk_mwe.utils.AppUtils.formatTime;
 import static com.example.cwk_mwe.utils.AppUtils.musicCardToJson;
+import static com.example.cwk_mwe.utils.Constants.*;
 
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
@@ -29,8 +29,7 @@ import androidx.annotation.RequiresApi;
 
 import com.example.cwk_mwe.R;
 import com.example.cwk_mwe.service.AudioPlayerService;
-import com.example.cwk_mwe.service.NotificationService;
-import com.example.cwk_mwe.utils.MusicCard;
+import com.example.cwk_mwe.models.MusicCard;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,9 +43,8 @@ public class PlayerActivity extends BaseActivity {
     private TextView musicArtistTextView;
     private TextView musicAlbumTextView;
     private SeekBar seekBar;
-    private Handler seekbarHandler = new Handler();
-
-    private Handler musicInfoHandler = new Handler(Looper.getMainLooper()) {
+    private final Handler seekbarHandler = new Handler();
+    private final Handler musicInfoHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_UPDATE_MUSIC_INFO) {
@@ -57,7 +55,8 @@ public class PlayerActivity extends BaseActivity {
     };
     private ObjectAnimator rotationAnimator;
 
-    private ServiceConnection connection = new ServiceConnection() {
+    // Service connection to bind to AudioPlayerService
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) service;
@@ -105,12 +104,12 @@ public class PlayerActivity extends BaseActivity {
                 }
                 if (audioPlayerService.isPlaying()) {
                     audioPlayerService.pause();
-                    audioPlayerService.manageNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
+                    audioPlayerService.manageNotificationService(ACTION_HIDE_NOTIFICATION);
                     playPauseButton.setImageResource(R.drawable.ic_play);
                     pauseCassetteRotation();
                 } else {
                     audioPlayerService.play();
-                    audioPlayerService.manageNotificationService(NotificationService.ACTION_SHOW_NOTIFICATION);
+                    audioPlayerService.manageNotificationService(ACTION_SHOW_NOTIFICATION);
                     playPauseButton.setImageResource(R.drawable.ic_pause);
                     resumeCassetteRotation();
                 }
@@ -146,7 +145,7 @@ public class PlayerActivity extends BaseActivity {
             if (isBound) {
                 audioPlayerService.seekTo(0);
                 audioPlayerService.pause();
-                audioPlayerService.manageNotificationService(NotificationService.ACTION_HIDE_NOTIFICATION);
+                audioPlayerService.manageNotificationService(ACTION_HIDE_NOTIFICATION);
                 seekBar.setProgress(0);
                 updateMusicTime();
                 updatePlayPauseButton();
@@ -195,32 +194,28 @@ public class PlayerActivity extends BaseActivity {
                 }
                 currentMusic.progress = audioPlayerService.getCurrentProgress();
 
-                if (currentMusic != null) {
-                    Log.d("PlayerActivity", "Bookmarking music: " + currentMusic.title + " at " + currentMusic.progress);
-                    SharedPreferences sharedPreferences = getSharedPreferences("BookmarkPrefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                Log.d("PlayerActivity", "Bookmarking music: " + currentMusic.title + " at " + currentMusic.progress);
+                SharedPreferences sharedPreferences = getSharedPreferences("BookmarkPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                    // Retrieve existing array of music cards
-                    String musicCardsJson = sharedPreferences.getString("musicCards", "[]");
-                    JSONArray musicCardsArray;
-                    try {
-                        musicCardsArray = new JSONArray(musicCardsJson);
-                    } catch (JSONException e) {
-                        musicCardsArray = new JSONArray();
-                    }
-
-                    // Add new music card and progress
-                    JSONObject musicCardObject = musicCardToJson(currentMusic);
-                    musicCardsArray.put(musicCardObject);
-
-                    // Save updated array back to SharedPreferences
-                    editor.putString("musicCards", musicCardsArray.toString());
-                    editor.apply();
-
-                    Toast.makeText(this, "Bookmark added successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Failed to add bookmark", Toast.LENGTH_SHORT).show();
+                // Retrieve existing array of music cards
+                String musicCardsJson = sharedPreferences.getString("musicCards", "[]");
+                JSONArray musicCardsArray;
+                try {
+                    musicCardsArray = new JSONArray(musicCardsJson);
+                } catch (JSONException e) {
+                    musicCardsArray = new JSONArray();
                 }
+
+                // Add new music card and progress
+                JSONObject musicCardObject = musicCardToJson(currentMusic);
+                musicCardsArray.put(musicCardObject);
+
+                // Save updated array back to SharedPreferences
+                editor.putString("musicCards", musicCardsArray.toString());
+                editor.apply();
+
+                Toast.makeText(this, "Bookmark added successfully", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -242,6 +237,7 @@ public class PlayerActivity extends BaseActivity {
         }
     }
 
+    // Update play/pause button when the music is paused or resumed
     private void updatePlayPauseButton() {
         if (isBound) {
             boolean isPlaying = audioPlayerService.isPlaying();
@@ -253,6 +249,7 @@ public class PlayerActivity extends BaseActivity {
         }
     }
 
+    // Update music info when the music is changed
     private void updateMusicInfo() {
         if (isBound) {
             MusicCard music = audioPlayerService.getCurrentMusicInfo();
@@ -264,6 +261,7 @@ public class PlayerActivity extends BaseActivity {
         }
     }
 
+    // Update the elapsed time and remaining time of the music
     private void updateMusicTime(){
         TextView elapsedTime = findViewById(R.id.tv_elapsed_time);
         TextView remainingTime = findViewById(R.id.tv_remaining_time);
@@ -289,6 +287,7 @@ public class PlayerActivity extends BaseActivity {
         seekbarHandler.removeCallbacksAndMessages(null);
     }
 
+    // Start or restart the cassette rotation animation
     private void updateCassetteRotation() {
         if (!audioPlayerService.isPlaying()) return;
         if (rotationAnimator == null) {

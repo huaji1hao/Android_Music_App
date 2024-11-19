@@ -1,4 +1,4 @@
-package com.example.cwk_mwe.utils;
+package com.example.cwk_mwe.models;
 
 import java.io.Serializable;
 

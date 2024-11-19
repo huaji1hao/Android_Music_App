@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class BaseActivity extends AppCompatActivity {
-
     private static final String PREFS_NAME = "AppPrefs";
     private static final String KEY_BACKGROUND_COLOR = "background_color";
 
@@ -22,6 +21,7 @@ public class BaseActivity extends AppCompatActivity {
         applyBackgroundColor();
     }
 
+    // Load the background color from SharedPreferences and apply it to the activity
     protected void applyBackgroundColor() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int defaultColor = Color.parseColor("#CFC7F8");
@@ -29,6 +29,7 @@ public class BaseActivity extends AppCompatActivity {
         getWindow().getDecorView().setBackgroundColor(color);
     }
 
+    // Save the background color to SharedPreferences and apply it to the activity
     protected void applyBackgroundColor(int color) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();

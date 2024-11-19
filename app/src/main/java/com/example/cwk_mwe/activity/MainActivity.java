@@ -1,7 +1,7 @@
 package com.example.cwk_mwe.activity;
 
-
-import static com.example.cwk_mwe.utils.AppUtils.PERMISSION_REQUEST_CODE;
+import static com.example.cwk_mwe.utils.Constants.ACTION_STOP;
+import static com.example.cwk_mwe.utils.Constants.PERMISSION_REQUEST_CODE;
 
 import android.Manifest;
 import android.content.Intent;
@@ -20,8 +20,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cwk_mwe.utils.MusicCard;
+import com.example.cwk_mwe.adapter.BookmarkRecyclerViewAdapter;
+import com.example.cwk_mwe.adapter.MusicRecyclerViewAdapter;
+import com.example.cwk_mwe.models.MusicCard;
 import com.example.cwk_mwe.R;
+import com.example.cwk_mwe.service.AudioPlayerService;
 import com.example.cwk_mwe.utils.VerticalSpaceItemDecoration;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -43,13 +46,24 @@ public class MainActivity extends BaseActivity {
         setupButtons();
         setupBottomNavigation();
         handlePermissions();
+        musicAdapter.reloadMusicList();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent stopIntent = new Intent(this, AudioPlayerService.class);
+        stopIntent.setAction(ACTION_STOP);
+        startService(stopIntent);
+    }
+
+    // Setup the recycler views for music and bookmarks
     private void setupRecyclerViews() {
         setupMusicRecyclerView();
         setupBookmarkRecyclerView();
     }
 
+    // Setup the recycler view for music
     private void setupMusicRecyclerView() {
         RecyclerView musicRecyclerView = findViewById(R.id.music_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
@@ -68,11 +82,13 @@ public class MainActivity extends BaseActivity {
         musicAdapter = new MusicRecyclerViewAdapter(this, musicList);
         musicRecyclerView.setAdapter(musicAdapter);
 
+        // Add vertical space between items
         int verticalSpaceHeight = getResources().getDimensionPixelSize(R.dimen.recycler_view_item_space);
         musicRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(verticalSpaceHeight));
 
     }
 
+    // Setup the recycler view for bookmarks
     private void setupBookmarkRecyclerView() {
         RecyclerView bookmarkRecyclerView = findViewById(R.id.bookmark_recycler_view);
         LinearLayoutManager bookmarkLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
@@ -90,10 +106,12 @@ public class MainActivity extends BaseActivity {
         bookmarkAdapter = new BookmarkRecyclerViewAdapter(this, musicList);
         bookmarkRecyclerView.setAdapter(bookmarkAdapter);
 
+        // Add vertical space between items
         int verticalSpaceHeight = getResources().getDimensionPixelSize(R.dimen.recycler_view_item_space);
         bookmarkRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(verticalSpaceHeight));
     }
 
+    // Setup the clear button to clear all bookmarks
     private void setupButtons() {
         ImageView clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
@@ -108,6 +126,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    // Setup the bottom navigation bar
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -126,6 +145,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    // Handle permissions for the app
     private void handlePermissions() {
         List<String> permissionsNeeded = new ArrayList<>();
 
@@ -139,10 +159,6 @@ public class MainActivity extends BaseActivity {
             permissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(Manifest.permission.READ_CALL_LOG);
-        }
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             permissionsNeeded.add(Manifest.permission.READ_MEDIA_AUDIO);
         }
@@ -152,6 +168,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    //After requesting permissions, check if all permissions are granted and load the music files
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -174,13 +191,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    // Reload the music list and bookmarks when the activity is resumed
     @Override
     protected void onResume() {
         super.onResume();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.navigation_list);
-
-        musicAdapter.reloadMusicList();
         bookmarkAdapter.reloadBookmarks();
     }
 
