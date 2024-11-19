@@ -80,7 +80,6 @@ public class SettingActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         Intent intent = new Intent(this, AudioPlayerService.class);
-        startService(intent); // Ensure the service is started
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 

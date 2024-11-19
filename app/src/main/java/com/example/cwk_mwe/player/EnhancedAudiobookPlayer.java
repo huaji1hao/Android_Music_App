@@ -30,4 +30,14 @@ public class EnhancedAudiobookPlayer extends AudiobookPlayer {
         }
         super.stop();
     }
+
+    @Override
+    public void setPlaybackSpeed(float speed) {
+        if (mediaPlayer != null) {
+            mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(speed));
+            if (this.state == AudiobookPlayerState.PAUSED) {
+                mediaPlayer.pause();
+            }
+        }
+    }
 }
