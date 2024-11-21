@@ -7,6 +7,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,6 +56,18 @@ public class MainActivity extends BaseActivity {
         Intent stopIntent = new Intent(this, AudioPlayerService.class);
         stopIntent.setAction(ACTION_STOP);
         startService(stopIntent);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setContentView(R.layout.activity_main);
+
+        // Re-setup the views and other components
+        setupRecyclerViews();
+        setupButtons();
+        setupBottomNavigation();
+        musicAdapter.reloadMusicList();
     }
 
     // Setup the recycler views for music and bookmarks

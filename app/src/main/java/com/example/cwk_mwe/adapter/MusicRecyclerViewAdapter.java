@@ -77,6 +77,7 @@ public class MusicRecyclerViewAdapter extends RecyclerView.Adapter<MusicRecycler
         public MusicViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.music_title);
+            title.setSelected(true);
             artist = itemView.findViewById(R.id.music_artist);
             duration = itemView.findViewById(R.id.music_duration);
         }

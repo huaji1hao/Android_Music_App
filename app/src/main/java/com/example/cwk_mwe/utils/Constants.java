@@ -10,4 +10,7 @@ public class Constants {
     public static final String CHANNEL_ID = "AudioPlayerChannel";
     public static final String ACTION_SHOW_NOTIFICATION = "com.example.cwk_mwe.ACTION_SHOW_NOTIFICATION";
     public static final String ACTION_HIDE_NOTIFICATION = "com.example.cwk_mwe.ACTION_HIDE_NOTIFICATION";
+    public static final String ACTION_PLAY_PAUSE = "com.example.cwk_mwe.ACTION_PLAY_PAUSE";
+    public static final String ACTION_PREV = "com.example.cwk_mwe.ACTION_PREV";
+    public static final String ACTION_NEXT = "com.example.cwk_mwe.ACTION_NEXT";
 }

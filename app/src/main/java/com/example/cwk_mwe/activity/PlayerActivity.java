@@ -49,8 +49,10 @@ public class PlayerActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             if (msg.what == MSG_UPDATE_MUSIC_INFO) {
                 updateMusicInfo();
+                updatePlayPauseButton();
                 updateCassetteRotation();
             }
+
         }
     };
     private ObjectAnimator rotationAnimator;
@@ -66,7 +68,7 @@ public class PlayerActivity extends BaseActivity {
             updateMusicInfo();
             updatePlayPauseButton();
             updateSeekBar();
-            updateCassetteRotation();
+            startCassetteRotation();
         }
 
         @Override
@@ -90,6 +92,18 @@ public class PlayerActivity extends BaseActivity {
         setupBookmarkIcon();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pauseCassetteRotation();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCassetteRotation();
+    }
+
     private void setupUI() {
         ImageButton backButton = findViewById(R.id.back_button0);
         backButton.setOnClickListener(v -> finish());
@@ -104,12 +118,10 @@ public class PlayerActivity extends BaseActivity {
                 }
                 if (audioPlayerService.isPlaying()) {
                     audioPlayerService.pause();
-                    audioPlayerService.manageNotificationService(ACTION_HIDE_NOTIFICATION);
                     playPauseButton.setImageResource(R.drawable.ic_play);
                     pauseCassetteRotation();
                 } else {
                     audioPlayerService.play();
-                    audioPlayerService.manageNotificationService(ACTION_SHOW_NOTIFICATION);
                     playPauseButton.setImageResource(R.drawable.ic_pause);
                     resumeCassetteRotation();
                 }
@@ -140,12 +152,15 @@ public class PlayerActivity extends BaseActivity {
         musicArtistTextView = findViewById(R.id.music_artist);
         musicAlbumTextView = findViewById(R.id.music_album);
 
+        musicTitleTextView.setSelected(true);
+        musicArtistTextView.setSelected(true);
+        musicAlbumTextView.setSelected(true);
+
         ImageView stopButton = findViewById(R.id.stop_button);
         stopButton.setOnClickListener(v -> {
             if (isBound) {
                 audioPlayerService.seekTo(0);
                 audioPlayerService.pause();
-                audioPlayerService.manageNotificationService(ACTION_HIDE_NOTIFICATION);
                 seekBar.setProgress(0);
                 updateMusicTime();
                 updatePlayPauseButton();
@@ -288,7 +303,7 @@ public class PlayerActivity extends BaseActivity {
     }
 
     // Start or restart the cassette rotation animation
-    private void updateCassetteRotation() {
+    private void startCassetteRotation() {
         if (!audioPlayerService.isPlaying()) return;
         if (rotationAnimator == null) {
             ImageView cassetteImage = findViewById(R.id.cassette_image);
@@ -298,6 +313,17 @@ public class PlayerActivity extends BaseActivity {
             rotationAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         }
         rotationAnimator.start();
+    }
+
+    private void updateCassetteRotation() {
+        if (rotationAnimator != null) {
+            if (audioPlayerService.isPlaying()) {
+                resumeCassetteRotation();
+            } else {
+                // mPause is already true
+                pauseCassetteRotation();
+            }
+        }
     }
 
     private void pauseCassetteRotation() {

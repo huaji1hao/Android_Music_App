@@ -34,15 +34,17 @@ public class AppUtils {
                     MusicCard musicCard = new MusicCard();
 
                     // Remove file extension from title
-                    musicCard.title = file.getName().substring(0, file.getName().lastIndexOf('.'));
+//                    musicCard.title = file.getName().substring(0, file.getName().lastIndexOf('.'));
 
                     // Retrieve metadata
                     try (MediaMetadataRetriever mmr = new MediaMetadataRetriever()) {
                         mmr.setDataSource(file.getAbsolutePath());
+                        String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
                         String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
                         String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
                         String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 
+                        musicCard.title = title != null ? title : file.getName().substring(0, file.getName().lastIndexOf('.'));
                         musicCard.artist = artist != null ? artist : "Unknown Artist";
                         musicCard.album = album != null ? album : "Unknown Album";
                         musicCard.duration = duration != null ? duration : "Unknown Duration";

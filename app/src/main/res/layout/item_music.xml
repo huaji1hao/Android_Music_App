@@ -14,6 +14,13 @@
         android:text="Title"
         android:textColor="#000000"
         android:textSize="16sp"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:selectAllOnFocus="true"
         app:layout_constraintEnd_toStartOf="@id/music_duration"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

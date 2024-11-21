@@ -108,6 +108,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         public MusicViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.music_title);
+            title.setSelected(true);
             artist = itemView.findViewById(R.id.music_artist);
             progress = itemView.findViewById(R.id.music_duration); // Assuming the same TextView is used for progress
         }

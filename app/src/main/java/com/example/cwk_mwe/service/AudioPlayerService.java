@@ -201,9 +201,13 @@ public class AudioPlayerService extends Service {
             audiobookPlayer.load(path, playbackSpeed);
             audiobookPlayer.play();
             manageNotificationService(ACTION_SHOW_NOTIFICATION);
-            if (handler != null){
-                handler.sendEmptyMessage(MSG_UPDATE_MUSIC_INFO);
-            }
+            sendUpdateMessage();
+        }
+    }
+
+    public void sendUpdateMessage() {
+        if (handler != null) {
+            handler.sendEmptyMessage(MSG_UPDATE_MUSIC_INFO);
         }
     }
 
